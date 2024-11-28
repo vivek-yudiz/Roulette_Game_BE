@@ -1,0 +1,246 @@
+.game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.controls {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#spin-btn, #clear-btn {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#spin-btn {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+}
+
+#spin-btn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+#clear-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+#winners-container {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.winner-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.win-amount {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* Result Popup Styles */
+.result-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.result-popup.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.result-popup.win {
+    box-shadow: 0 0 50px rgba(46, 204, 113, 0.5);
+}
+
+.result-popup.loss {
+    box-shadow: 0 0 50px rgba(231, 76, 60, 0.5);
+}
+
+.popup-content h2 {
+    margin: 0 0 20px 0;
+    font-size: 32px;
+}
+
+.result-popup.win h2 {
+    color: #2ecc71;
+}
+
+.result-popup.loss h2 {
+    color: #e74c3c;
+}
+
+.result-number {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    margin: 0 auto;
+}
+
+.result-number.red { background-color: #e74c3c; }
+.result-number.black { background-color: #2c3e50; }
+.result-number.green { background-color: #27ae60; }
+
+.win-amount {
+    color: #2ecc71;
+    font-size: 24px;
+    margin: 15px 0;
+}
+
+.loss-message {
+    color: #e74c3c;
+    font-size: 20px;
+    margin: 15px 0;
+}
+
+.result-color {
+    font-size: 18px;
+    margin: 15px 0;
+}
+
+.close-popup {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: background 0.3s;
+}
+
+.close-popup:hover {
+    background: #2980b9;
+}
+
+.fade-out {
+    animation: popup-disappear 0.5s ease-out forwards;
+}
+
+@keyframes popup-appear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes popup-disappear {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+}
+
+/* Add these animation classes */
+.animate {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slide-in 0.5s ease forwards;
+}
+
+.animate-text {
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards 0.3s;
+}
+
+.animate-spin {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+    animation: spin-in 0.8s ease forwards 0.5s;
+}
+
+.animate-bounce {
+    opacity: 0;
+    animation: bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards 0.7s;
+}
+
+.animate-fade {
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards 0.7s;
+}
+
+.animate-button {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slide-up 0.5s ease forwards 0.9s;
+}
+
+@keyframes slide-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spin-in {
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes bounce-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+    80% {
+        opacity: 1;
+        transform: scale(0.89);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slide-up {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+} 

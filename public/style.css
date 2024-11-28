@@ -1,0 +1,569 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #1a1a1a;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.roulette-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.wheel-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #2c3e50;
+    border: 10px solid #34495e;
+}
+
+.wheel-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.wheel-numbers {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.betting-board {
+    flex-grow: 1;
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.numbers-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.zero {
+    background: #27ae60;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.numbers {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 5px;
+}
+
+.number {
+    background: #34495e;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.number.red { background: #c0392b; }
+.number.black { background: #2c3e50; }
+
+.outside-bets {
+    display: grid;
+    gap: 10px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.bet-btn {
+    padding: 15px;
+    background: #34495e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.controls {
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.chips {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.chip {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+#spin-btn {
+    background: #27ae60;
+    color: white;
+}
+
+#spin-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+#clear-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Animation classes */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinning {
+    animation: spin 3s linear infinite;
+}
+
+.selected {
+    border: 2px solid yellow !important;
+}
+
+.bet-placed {
+    position: relative;
+}
+
+.bet-placed::after {
+    content: attr(data-bet);
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #f1c40f;
+    color: black;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+.user-info {
+    background: #2c3e50;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-name {
+    font-size: 1.2em;
+    color: #fff;
+}
+
+.user-balance {
+    font-size: 1.2em;
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* Add these styles for the wheel */
+.game-container {
+    display: flex;
+    gap: 30px;
+    margin: 20px auto;
+    max-width: 1200px;
+    align-items: flex-start;
+}
+
+.wheel-section {
+    flex: 0 0 400px;
+    position: relative;
+    padding-bottom: 200px;
+    margin-bottom: 100px;
+}
+
+.wheel-container {
+    width: 400px;
+    height: 400px;
+    position: relative;
+    margin: 20px auto;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #2c3e50;
+    position: relative;
+    overflow: hidden;
+    border: 10px solid #34495e;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    z-index: 5;
+}
+
+.wheel-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.wheel-numbers {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.wheel-numbers .number {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    transform-origin: 50% 200px;
+    background: #34495e;
+    border: 1px solid #2c3e50;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.number.red { background: #e74c3c; }
+.number.black { background: #2c3e50; }
+.number.green { background: #27ae60; }
+
+.result {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.number.winner {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.2) translateY(-5px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+/* Adjust your existing betting board styles to fit alongside the wheel */
+.betting-board {
+    flex: 1;
+    min-width: 0;
+}
+
+.result {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 20px;
+    color: white;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.winner-display {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.winner-display.show {
+    opacity: 1;
+}
+
+.winner-number {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+}
+
+.winner-number.red {
+    background: #e74c3c;
+}
+
+.winner-number.black {
+    background: #2c3e50;
+}
+
+.winner-number.green {
+    background: #27ae60;
+}
+
+.winner-text {
+    font-size: 18px;
+    color: #bdc3c7;
+}
+
+.winner-display.animate .winner-number {
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+#winning-number-display {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    text-align: center;
+    padding: 15px;
+    background: rgba(44, 62, 80, 0.9);
+    border-radius: 10px;
+    z-index: 20;
+}
+
+#winning-number {
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+#winners-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    padding: 15px;
+    background: rgba(44, 62, 80, 0.9);
+    border-radius: 10px;
+    z-index: 20;
+}
+
+.winner-item {
+    margin-bottom: 5px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.winner-item:last-child {
+    border-bottom: none;
+}
+
+.winner-name {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.win-amount {
+    color: #2ecc71;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Result Popup Styles - Complete overhaul */
+.result-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    transform: none;
+    z-index: 1000;
+    background: rgba(44, 62, 80, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.result-popup.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.result-popup.win {
+    border-left: 5px solid #2ecc71;
+}
+
+.result-popup.loss {
+    border-left: 5px solid #e74c3c;
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.popup-content h2 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: white;
+}
+
+.result-number {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    color: white;
+}
+
+.win-amount, .loss-message {
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+.close-popup {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.close-popup:hover {
+    background: white;
+    color: #2c3e50;
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+/* Animation keyframes update */
+@keyframes popup-appear {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes popup-disappear {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+} 

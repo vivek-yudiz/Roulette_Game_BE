@@ -66,23 +66,25 @@ class Player {
   async disconnect() {
     try {
 
-      const boards = await boardManager.findBoardsByPlayer(this.iUserId);
+      // const boards = await boardManager.findBoardsByPlayer(this.iUserId);
       
-      for (const board of boards) {
-        // Update player status in board
-        const player = board.participants.find(p => p.iUserId === this.iUserId);
-        if (player) {
-          player.isActive = false;
-          player.disconnectedAt = Date.now();
-          await boardManager.updateBoard(board._id, board);
+      // for (const board of boards) {
+      //   // Update player status in board
+      //   const player = board.participants.find(p => p.iUserId === this.iUserId);
+      //   if (player) {
+      //     player.isActive = false;
+      //     player.disconnectedAt = Date.now();
+      //     await boardManager.updateBoard(board._id, board);
 
-          // Notify other players
-          this.socket.to(board._id).emit('playerDisconnected', {
-            userId: this.iUserId,
-            timestamp: Date.now()
-          });
-        }
-      }
+      //     // Notify other players
+      //     this.socket.to(board._id).emit('playerDisconnected', {
+      //       userId: this.iUserId,
+      //       timestamp: Date.now()
+      //     });
+      //   }
+      // }
+      console.log("::::::::::::::::::disconnect::::::::::::::::::");
+      
     } catch (error) {
       console.error('Disconnect error:', error);
     }

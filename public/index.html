@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            <div class="user-name">Welcome, <span id="username">Player</span></div>
+            <div class="user-balance">Balance: <span id="user-balance">0</span></div>
+        </div>
+
+        <div class="game-container">
+            <div class="wheel-section">
+                <div class="wheel-container"></div>
+                <div class="winner-display">
+                    <div class="winner-number"></div>
+                    <div class="winner-text">Winner</div>
+                </div>
+                <div id="winning-number-display">
+                    <span>Winner: </span>
+                    <span id="winning-number"></span>
+                </div>
+                <div id="winners-container"></div>
+            </div>
+
+            <div class="betting-board">
+                <div class="numbers-grid">
+                    <div class="zero" data-number="0">0</div>
+                    <div class="numbers">
+                        <!-- Numbers will be added by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="outside-bets">
+                    <div class="row">
+                        <button class="bet-btn" data-type="RED">RED</button>
+                        <button class="bet-btn" data-type="BLACK">BLACK</button>
+                    </div>
+                    <div class="row">
+                        <button class="bet-btn" data-type="EVEN">EVEN</button>
+                        <button class="bet-btn" data-type="ODD">ODD</button>
+                    </div>
+                    <div class="row">
+                        <button class="bet-btn" data-type="LOW">1-18</button>
+                        <button class="bet-btn" data-type="HIGH">19-36</button>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="chips">
+                        <button class="chip" data-value="10">10</button>
+                        <button class="chip" data-value="20">20</button>
+                        <button class="chip" data-value="50">50</button>
+                        <button class="chip" data-value="100">100</button>
+                    </div>
+                    <div class="actions">
+                        <button id="spin" class="action-btn">SPIN</button>
+                        <button id="clear-btn" class="action-btn">CLEAR BETS</button>
+                    </div>
+                </div>
+
+                <div class="current-bets">
+                    <h3>Current Bets</h3>
+                    <div id="bets-list"></div>
+                    <div class="total-bet">Total Bet: <span id="total-bet">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html> 

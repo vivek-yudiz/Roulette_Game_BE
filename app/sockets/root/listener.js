@@ -17,7 +17,10 @@ class PlayerListener {
           await this.handlePlaceBet(data.data, callback);
           break;
         case 'startSpin':
-          await this.handleStartSpin(callback);
+          console.log("::::::::::::::::::here::::::::::::::::::");
+          
+          const result = await this.handleStartSpin(callback);
+          console.log(":::::::::🚀 ~ file: listener.js:21 ~ PlayerListener ~ onEvent ~ result:", result)
           break;
         default:
           if (typeof callback === 'function') {
@@ -32,70 +35,30 @@ class PlayerListener {
     }
   }
 
-  async handlePlaceBet(data, callback = () => {}) {
+  async handlePlaceBet(data, callback) {
     try {
       const board = await boardManager.getBoard(this.boardId);
-
       if (!board) {
-        if (typeof callback === 'function') {
-          return callback({ error: 'Board not found' });
-        }
-        return;
+        return callback({ error: 'Board not found' });
       }
 
-      // Handle multiple bets
-      const results = [];
-      let totalAmount = 0;
+      // Add bet logic here...
 
-      // Calculate total amount first
-      totalAmount = data.bets.reduce((sum, bet) => sum + bet.amount, 0);
-
-      // Check if user has enough chips for all bets
+      // Update user info in response
       const participant = board.participants.find(p => p.iUserId === this.userId);
-      if (!participant || participant.nChips < totalAmount) {
-        throw new Error('Insufficient chips for all bets');
-      }
-
-      // Place all bets
-      for (const betData of data.bets) {
-        const bet = await board.addBet(
-          this.userId, 
-          betData.betType, 
-          betData.betDetails, 
-          betData.amount
-        );
-        results.push(bet);
-
-        // Emit individual bet placed events
-        global.io.to(this.boardId).emit('betPlaced', {
-          userId: this.userId,
-          betType: betData.betType,
-          betDetails: betData.betDetails,
-          amount: betData.amount,
-          timestamp: Date.now()
-        });
-      }
       
-      // Update board in Redis after adding all bets
-      const serializedBoard = board.serialize();
-      await redis.client.json.set(`roulette:${this.boardId}:boards`, '$', serializedBoard);
-
-      if (typeof callback === 'function') {
-        callback({ 
-          success: true,
-          bets: results,
-          totalAmount: totalAmount,
-          boardState: board.getGameState()
-        });
-      }
-
-      console.log("Current bets after placing:", board.bets);
+      callback({
+        success: true,
+        board: board.getGameState(),
+        user: {
+          sUserName: participant.sUserName,
+          nChips: participant.nChips
+        }
+      });
 
     } catch (error) {
       console.error('Place bet error:', error);
-      if (typeof callback === 'function') {
-        callback({ error: error.message });
-      }
+      callback({ error: error.message });
     }
   }
 
@@ -103,100 +66,90 @@ class PlayerListener {
     try {
       const board = await boardManager.getBoard(this.boardId);
       if (!board) {
-        if (typeof callback === 'function') {
-          return callback({ error: 'Board not found' });
-        }
-        return;
+        return callback({ error: 'Board not found' });
       }
 
       console.log("🚀 Board data before spin:", JSON.stringify(board, null, 2));
 
+      // Emit betting closed event
       global.io.to(this.boardId).emit('bettingClosed', {
         totalBets: board.totalBets
       });
 
-      setTimeout(async () => {
-        const freshBoard = await boardManager.getBoard(this.boardId);
-        const winningNumber = 8; 
-        console.log("🚀 Winning number set to:", winningNumber);
-        console.log("🚀 Current board bets:", JSON.stringify(freshBoard.bets, null, 2));
+      // Generate winning number
+      const winningNumber = Math.floor(Math.random() * 37); // 0-36
+      const winningColor = this.getNumberColor(winningNumber);
+      
+      console.log("🚀 Winning number:", winningNumber, "Color:", winningColor);
 
-        const winningColor = this.getNumberColor(winningNumber);
-        const winners = freshBoard.calculateWinnings(winningNumber);
+      // Calculate winners
+      const winners = board.calculateWinnings(winningNumber);
+      console.log("🚀 Winners:", winners);
 
-        console.log("🚀 ~ file: listener.js:96 ~ PlayerListener ~ setTimeout ~ winners:", winners);
-
-        // Update winners' balances both in board and database
-        const balanceUpdates = [];
-        Object.entries(winners).forEach(([userId, winAmount]) => {
-          const participant = freshBoard.participants.find(p => p.iUserId === userId);
-          if (participant) {
-            participant.nChips += winAmount;
-            // Add to balance updates array
-            balanceUpdates.push({
-              updateOne: {
-                filter: { _id: userId },
-                update: { $inc: { nChips: winAmount } }
-              }
-            });
-          }
-        });
-
-        // Update losers' balances in database (those who didn't win)
-        const losers = freshBoard.participants.filter(p => !winners[p.iUserId]);
-        losers.forEach(loser => {
-          const userBets = freshBoard.bets[loser.iUserId] || [];
-          const totalLoss = userBets.reduce((sum, bet) => sum + bet.amount, 0);
-          if (totalLoss > 0) {
-            balanceUpdates.push({
-              updateOne: {
-                filter: { _id: loser.iUserId },
-                update: { $inc: { nChips: -totalLoss } }
-              }
-            });
-          }
-        });
-
-
-        if (balanceUpdates.length > 0) {
-          await User.bulkWrite(balanceUpdates);
+      // Update balances
+      const balanceUpdates = [];
+      
+      // Process winners
+      Object.entries(winners).forEach(([userId, winAmount]) => {
+        const participant = board.participants.find(p => p.iUserId === userId);
+        if (participant) {
+          participant.nChips += winAmount;
+          balanceUpdates.push({
+            updateOne: {
+              filter: { _id: userId },
+              update: { $inc: { nChips: winAmount } }
+            }
+          });
         }
+      });
 
-        const serializedBoard = freshBoard.serialize();
-        await redis.client.json.set(`roulette:${this.boardId}:boards`, '$', serializedBoard);
-
-        global.io.to(this.boardId).emit('spinResult', {
-          number: winningNumber,
-          color: winningColor,
-          winners: Object.entries(winners).map(([userId, amount]) => ({
-            userId,
-            winAmount: amount,
-            newBalance: freshBoard.participants.find(p => p.iUserId === userId)?.nChips || 0
-          })),
-          nextRoundIn: 10
-        });
-
-        freshBoard.bets = {};
-        freshBoard.totalBets = 0;
-        freshBoard.currentRound++;
-        freshBoard.status = 'waiting';
-        freshBoard.roundStartTime = Date.now() + 10000;
-
-        const resetBoardData = freshBoard.serialize();
-        await redis.client.json.set(`roulette:${this.boardId}:boards`, '$', resetBoardData);
-
-        this.spinTimeout = null;
-
-        if (typeof callback === 'function') {
-          callback({ success: true });
+      // Process losers
+      const losers = board.participants.filter(p => !winners[p.iUserId]);
+      losers.forEach(loser => {
+        const userBets = board.bets[loser.iUserId] || [];
+        const totalLoss = userBets.reduce((sum, bet) => sum + bet.amount, 0);
+        if (totalLoss > 0) {
+          balanceUpdates.push({
+            updateOne: {
+              filter: { _id: loser.iUserId },
+              update: { $inc: { nChips: -totalLoss } }
+            }
+          });
         }
-      }, 10000);
+      });
+
+      // Update database
+      if (balanceUpdates.length > 0) {
+        await User.bulkWrite(balanceUpdates);
+      }
+
+      // Emit spin result to all players
+      global.io.to(this.boardId).emit('spinResult', {
+        number: winningNumber,
+        color: winningColor,
+        winners: Object.entries(winners).map(([userId, amount]) => ({
+          userId,
+          winAmount: amount,
+          newBalance: board.participants.find(p => p.iUserId === userId)?.nChips || 0
+        })),
+        nextRoundIn: 10
+      });
+
+      // Reset board for next round
+      board.bets = {};
+      board.totalBets = 0;
+      board.currentRound++;
+      board.status = 'waiting';
+      board.roundStartTime = Date.now() + 10000;
+
+      // Save updated board
+      await boardManager.updateBoard(this.boardId, board);
+
+      callback({ success: true });
 
     } catch (error) {
       console.error('Spin error:', error);
-      if (typeof callback === 'function') {
-        callback({ error: error.message });
-      }
+      callback({ error: error.message });
     }
   }
 

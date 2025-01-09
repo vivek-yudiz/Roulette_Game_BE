@@ -35,7 +35,7 @@ class Socket {
       sMobile: true,
       nChips: true,
       sCurrentAvatar: true,
-      nCurrentAvatarIndex:true
+      nCurrentAvatarIndex: true,
     };
     const user = await User.findOne(query, project);
     // if (error) return next(new Error(messages.server_error(), error.toString()));

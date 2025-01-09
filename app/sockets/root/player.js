@@ -35,7 +35,6 @@ class Player {
         return callback({ message: 'Player not found in this board' });
       }
 
-
       if (!this.socket.eventNames().includes(iBoardId)) {
         const playerListener = new PlayerListener(iBoardId, this.iUserId);
         this.socket.on(iBoardId, playerListener.onEvent.bind(playerListener));
@@ -43,12 +42,12 @@ class Player {
 
       this.socket.to(iBoardId).emit('playerReconnected', {
         userId: this.iUserId,
-        socketId: this.socket.id
+        socketId: this.socket.id,
       });
 
-      callback({ 
+      callback({
         board: board.getGameState(),
-        user: existingPlayer
+        user: existingPlayer,
       });
     } catch (error) {
       console.error('Join board error:', error);
@@ -65,9 +64,8 @@ class Player {
 
   async disconnect() {
     try {
-
       // const boards = await boardManager.findBoardsByPlayer(this.iUserId);
-      
+
       // for (const board of boards) {
       //   // Update player status in board
       //   const player = board.participants.find(p => p.iUserId === this.iUserId);
@@ -83,8 +81,7 @@ class Player {
       //     });
       //   }
       // }
-      console.log("::::::::::::::::::disconnect::::::::::::::::::");
-      
+      console.log('::::::::::::::::::disconnect::::::::::::::::::');
     } catch (error) {
       console.error('Disconnect error:', error);
     }
